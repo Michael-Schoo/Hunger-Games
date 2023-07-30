@@ -47,7 +47,7 @@ class Fight():
 
         turn_count = 0
         while self.winner == None:
-            turn_count+=1
+            turn_count += 1
             d1 = self.turn(self.person1, self.person2)
             d2 = self.turn(self.person2, self.person1)
 
@@ -137,7 +137,7 @@ class Fight():
         damage = random.randint(5, stats['damage']) * (stats['motivation'] / 50)
 
         # get the protection
-        protection = random.randint(5, stats['protection']) * (stats['motivation'] / 50)/10
+        protection = random.randint(5, stats['protection']) * (stats['motivation'] / 50) / 10
 
         damage_dealt = abs(protection - damage)
 

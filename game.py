@@ -143,7 +143,7 @@ if __name__ == '__main__':
     print(f"""Best stats below:
 Damage: {best_stat['damage']}
 Protection: {best_stat['protection']}
-Speed: {best_stat['protection']}
+Speed: {best_stat['speed']}
 Specie: {best_stat['specie']}
     """)
     stats.save()

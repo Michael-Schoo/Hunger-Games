@@ -1,8 +1,8 @@
 
 class BasePerson():
     # The default stats for a person
-    health = 100
-    motivation = 50
+    health: float = 100
+    motivation: float = 50
 
     # The min stats for a person (but customizable)
     speed: float = 5
@@ -50,16 +50,24 @@ class BasePerson():
         return self.health * self.penalties['health']
 
     def get_motivation(self):
-        return self.motivation * self.penalties['motivation']
+        motivation = self.motivation * self.penalties['motivation']
+        if motivation < 5: return 5
+        return motivation
 
     def get_speed(self):
-        return self.speed * self.penalties['speed']
+        speed = self.speed * self.penalties['speed']
+        if speed < 5: return 5
+        return speed
 
     def get_damage(self):
-        return self.damage * self.penalties['damage']
+        damage = self.damage * self.penalties['damage']
+        if damage < 5: return 5
+        return damage
 
     def get_protection(self):
-        return self.protection * self.penalties['protection']
+        protection = self.protection * self.penalties['protection']
+        if protection < 5: return 5
+        return protection
 
     def get_stats(self, raw=False):
         if raw:
@@ -73,10 +81,10 @@ class BasePerson():
 
         return {
             'health': self.get_health(),
-            'motivation': self.get_motivation(),
-            'speed': self.get_speed(),
-            'damage': self.get_damage(),
-            'protection': self.get_protection()
+            'motivation': round(self.get_motivation()),
+            'speed': round(self.get_speed()),
+            'damage': round(self.get_damage()),
+            'protection': round(self.get_protection())
         }
 
     def remove_health(self, amount: float):

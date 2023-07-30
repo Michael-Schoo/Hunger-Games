@@ -85,10 +85,21 @@ def make_random_stats(best_stat: stat = None, allowed_difference = 6):
     return stats
 
 
+def choose_specie(prev_specie) -> Person:
+    # 75% of same
+    random_num = random.randint(0, 100)
+    if random_num < 75 and prev_specie is not None:
+        for person in people_options:
+            if person.__class__.__name__ == prev_specie:
+                return person
+            
+    return random.choice(people_options)
+
+
 def get_random_person(prev_winner: stat | None, allowed_difference: int | None, person_num = 1) -> Person:
     stats = make_random_stats(prev_winner, allowed_difference)
-    person = random.choice(people_options)(**stats)
-    person.name = f'AI_{person_num}'
+    person = choose_specie(prev_winner and prev_winner.get("speed"))(**stats)
+    person.name = f'AI_{person.__class__.__name__}_{person_num}'
 
     return person
 
