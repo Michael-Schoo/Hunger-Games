@@ -1,5 +1,6 @@
 import asyncio
 from day import Day
+from gui import GUI
 from person.BasePerson import BasePerson as Person
 from stats import Stats
 from random_person import get_random_person
@@ -72,7 +73,7 @@ class Game():
             alive_people, _ = self.get_alive_players()
 
 
-def game_runner(iterations: int, parallel_id: int, stats: Stats, players: int = 1000, save_unneeded_data=False):
+def game_runner(iterations: int, parallel_id: int, stats: Stats, players: int = 1000, save_unneeded_data=False, gui: GUI = None):
     # go through all the iterations (aka evolutions)
     for iteration in range(1, iterations+1):
         game = Game(parallel_id, iteration, stats, iterations - iteration, players)
@@ -80,7 +81,10 @@ def game_runner(iterations: int, parallel_id: int, stats: Stats, players: int = 
         stats.simplify_data(parallel_id, iteration)
 
         # print that game's best stat
-        print(str(game.game_id), str(iteration), game.stats.best_data[(parallel_id, iteration)]['stats'], '\n')
+        if gui:
+            gui.update()
+        else:
+            print(str(game.game_id), str(iteration), game.stats.best_data[(parallel_id, iteration)]['stats'], '\n')
 
         # remove the unneeded data (not needed for the next iteration)
         if not save_unneeded_data:
@@ -108,6 +112,7 @@ if __name__ == '__main__':
     save_unneeded_data = False
 
     stats = Stats(parallel_games)
+    gui = GUI(stats)
 
     # save metadata
     with open('data/metadata.json', 'w') as f:
@@ -124,7 +129,7 @@ if __name__ == '__main__':
 
     # run the games (either in parallel or not)
     if parallel_games == 1:
-        game_runner(iterations, 0, stats, players, save_unneeded_data)
+        game_runner(iterations, 0, stats, players, save_unneeded_data, gui)
 
     else:
         with concurrent.futures.ThreadPoolExecutor() as executor:
@@ -132,7 +137,7 @@ if __name__ == '__main__':
             async def run_async_matches():
                 tasks = []
                 for parallel_id in range(parallel_games):
-                    tasks.append(asyncio.ensure_future(async_game(iterations, parallel_id, stats, players, save_unneeded_data)))
+                    tasks.append(asyncio.ensure_future(async_game(iterations, parallel_id, stats, players, save_unneeded_data, gui)))
 
                 await asyncio.gather(*tasks)
 
@@ -140,12 +145,12 @@ if __name__ == '__main__':
 
     # save the best stats (and print them out)
     best_stat = stats.get_best_stat_overall()
-    print(f"""Best stats below:
-Damage: {best_stat['damage']}
-Protection: {best_stat['protection']}
-Speed: {best_stat['speed']}
-Specie: {best_stat['specie']}
-    """)
+    print(f"""\n\nBest stats below:
+ - Damage: {best_stat['damage']}
+ - Protection: {best_stat['protection']}
+ - Speed: {best_stat['speed']}
+ - Specie: {best_stat['specie']}
+""")
     stats.save()
 
     # save metadata
